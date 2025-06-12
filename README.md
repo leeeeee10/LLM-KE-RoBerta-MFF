@@ -1,112 +1,147 @@
 # LLM-KE-RoBerta-MFF
 
-## 项目概述✨
-本项目 `LLM-KE-RoBerta-MFF` 专注于自然语言处理和大语言模型（LLM）相关的研究与开发。它涵盖了模型微调、知识增强检索以及文本分类等多个重要任务。通过整合不同的技术和模型架构，旨在提升自然语言处理任务的性能和效果，为相关领域的研究和应用提供有力支持。
+## Project Overview ✨
 
-## 项目结构📁
+The `LLM-KE-RoBerta-MFF` project focuses on research and development in natural language processing and large language models (LLM). It covers several important tasks including model fine-tuning, knowledge-enhanced retrieval, and text classification. By integrating different technologies and model architectures, it aims to improve the performance of natural language processing tasks and provide strong support for research and applications in related fields.
+
+## Project Structure 📁
+
 ```
 LLM-KE-RoBerta-MFF/
 ├── lora_rag_LLM/
-│   ├── main.py               # 模型微调主程序，负责加载模型、准备数据集、进行模型微调以及保存微调后的模型
-│   ├── rag.py                # 知识增强检索模块，实现从知识库中检索相关知识并融入原始提示
-│   ├── DeepSeek-R1-Distill-Qwen-1.5B/  # 模型文件目录，存放用于微调的基础模型文件
-│   ├── datasets.jsonl        # 数据集文件，包含用于模型微调的样本数据
-│   ├── final_models/         # 最终保存的全量模型目录，保存微调后的完整模型
-│   └── saved_models/         # 保存的LoRA模型目录，保存LoRA微调后的模型参数
+│   ├── main.py               # Core program for model fine-tuning, responsible for loading models, preparing datasets, fine-tuning models, and saving fine-tuned models
+│   ├── rag.py                # Knowledge-enhanced retrieval module, implementing the retrieval of relevant knowledge from the knowledge base and integrating it into the original prompt
+│   ├── DeepSeek-R1-Distill-Qwen-1.5B/  # Model file directory, storing the base model files for fine-tuning
+│   ├── datasets.jsonl        # Dataset file containing sample data for model fine-tuning
+│   ├── final_models/         # Directory for saving the full final model, storing the completely fine-tuned model
+│   └── saved_models/         # Directory for saving LoRA models, storing the model parameters after LoRA fine-tuning
 ├── CSTA-Corpus/
-│   ├── keyword.txt           # 关键词文本文件，可能包含与文本分类任务相关的关键词信息
+│   ├── keyword.txt           # Keyword text file, possibly containing keyword information related to text classification tasks
 │   └── data/
-│       └── class.txt         # 类别文本文件，记录文本分类任务中的类别名单
+│       └── class.txt         # Category text file, recording the list of categories in text classification tasks
 ├── models/
-│   ├── bert.py               # 基于Roberta的文本分类模型实现，采用多头注意力池化机制
-│   ├── bert自适应.py          # 自适应Roberta文本分类模型实现，引入自适应注意力机制
-│   ├── bert_RCNN.py          # BERT与RCNN结合的文本分类模型实现（代码未给出，但从结构推测）
-│   ├── bert时间注意力.py       # 带时间注意力的BERT文本分类模型实现，添加时间注意力机制
-│   └── bert_RNN.py           # BERT与RNN结合的文本分类模型实现（代码未给出，但从结构推测）
-├── run.py                    # 运行脚本，负责加载数据集、初始化模型、进行训练和评估
-├── train_eval.py             # 训练和评估脚本，包含模型训练和评估的具体逻辑
-└── utils.py                  # 工具函数脚本，提供如构建数据集、迭代器等工具函数
+│   ├── bert.py               # Implementation of text classification model based on Roberta, using multi-head attention pooling mechanism
+│   ├── bert自适应.py          # Implementation of adaptive Roberta text classification model, introducing adaptive attention mechanism
+│   ├── bert_RCNN.py          # Implementation of text classification model combining BERT and RCNN (code not provided, but inferred from the structure)
+│   ├── bert时间注意力.py       # Implementation of BERT text classification model with time attention, adding time attention mechanism
+│   └── bert_RNN.py           # Implementation of text classification model combining BERT and RNN (code not provided, but inferred from the structure)
+├── run.py                    # Running script, responsible for loading datasets, initializing models, and performing training and evaluation
+├── train_eval.py             # Training and evaluation script, containing the specific logic for model training and evaluation
+└── utils.py                  # Utility function script, providing utility functions such as building datasets and iterators
 ```
 
-## 主要功能模块
+## Main Functional Modules
 
-### 1. LoRA微调与知识增强检索（`lora_rag_LLM`）🧠
+### 1. LoRA Fine-tuning and Knowledge-Enhanced Retrieval (`lora_rag_LLM`) 🧠
 
 #### `main.py`
-此文件是模型微调的核心程序，其主要功能如下：
-- **模型加载**：使用 `transformers` 库的 `AutoModelForCausalLM` 从指定路径加载 `DeepSeek-R1-Distill-Qwen-1.5B` 模型，并支持模型量化（使用 `BitsAndBytesConfig`）以减少内存使用。
-- **数据集准备**：从 `data_pre.py` 中获取样本数据，将其保存为 `datasets.jsonl` 文件，并使用 `datasets` 库加载和处理数据集，划分为训练集和验证集。
-- **模型微调**：使用 `peft` 库的 `LoraConfig` 对模型进行LoRA微调，通过 `transformers` 库的 `Trainer` 进行训练，并设置训练参数，如训练轮数、批次大小等。
-- **模型保存**：将微调后的LoRA模型保存到 `saved_models` 目录，将全量模型保存到 `final_models` 目录。
+
+This file is the core program for model fine-tuning, and its main functions are as follows:
+- Model Loading: Use `AutoModelForCausalLM` from the `transformers` library to load the `DeepSeek-R1-Distill-Qwen-1.5B` model from the specified path, and support model quantization (using `BitsAndBytesConfig`) to reduce memory usage.
+- Dataset Preparation: Obtain sample data from `data_pre.py`, save it as a `datasets.jsonl` file, and use the `datasets` library to load and process the dataset, dividing it into training and validation sets.
+- Model Fine-tuning: Use `LoraConfig` from the `peft` library for LoRA fine-tuning of the model, perform training through `Trainer` from the `transformers` library, and set training parameters such as the number of training epochs and batch size.
+- Model Saving: Save the fine-tuned LoRA model to the `saved_models` directory, and save the full model to the `final_models` directory.
 
 #### `rag.py`
-该文件实现了知识增强检索（RAG）功能，主要步骤如下：
-- **知识加载**：从指定文件夹中加载按类别组织的知识，提取提示和完成内容。
-- **TF-IDF预处理**：使用 `TfidfVectorizer` 对提示进行向量化处理，构建TF-IDF矩阵。
-- **知识检索**：支持多类别查询的检索，优先基于领域名称进行检索，若未检测到领域则使用TF-IDF检索。
-- **提示增强**：将检索到的知识以特定格式融入原始提示，增强模型的回答能力。
 
-### 2. 文本分类（`models` 和 `run.py`）📚
+This file implements the Knowledge-Enhanced Retrieval (RAG) function, and the main steps are as follows:
+- Knowledge Loading: Load category-organized knowledge from the specified folder, and extract prompts and completion contents.
+- TF-IDF Preprocessing: Use `TfidfVectorizer` to vectorize prompts and build a TF-IDF matrix.
+- Knowledge Retrieval: Support retrieval of multi-category queries, giving priority to retrieval based on domain names, and using TF-IDF retrieval if no domain is detected.
+- Prompt Enhancement: Integrate the retrieved knowledge into the original prompt in a specific format to enhance the model's answering ability.
 
-#### `models` 目录
-该目录包含多种基于BERT的文本分类模型实现，以 `bert.py` 为例，其主要特点如下：
-- **模型结构**：使用 `BertModel` 作为基础模型，添加多头注意力池化层，将最后四层的隐藏状态拼接并进行注意力池化，再通过两层MLP进行分类。
-- **配置参数**：包含训练集、验证集、测试集路径，类别名单，学习率，批次大小等配置信息。
+### 2. Text Classification (`models` and `run.py`) 📚
+
+#### `models` Directory
+
+This directory contains implementations of various BERT-based text classification models. Take `bert.py` as an example, its main features are as follows:
+- Model Structure: Use `BertModel` as the base model, add a multi-head attention pooling layer, splice the hidden states of the last four layers and perform attention pooling, and then use a two-layer MLP for classification.
+- Configuration Parameters: Include training set, validation set, test set paths, category list, learning rate, batch size and other configuration information.
 
 #### `run.py`
-这是文本分类任务的运行脚本，主要功能如下：
-- **参数解析**：使用 `argparse` 解析命令行参数，指定使用的模型（如 `bert`、`ERNIE` 等）。
-- **数据加载**：调用 `utils.py` 中的 `build_dataset` 和 `build_iterator` 函数加载和处理数据集。
-- **模型初始化**：根据指定的模型名称导入相应的模型类，并初始化模型。
-- **模型训练**：调用 `train_eval.py` 中的 `train` 函数进行模型训练和评估。
 
-## 环境要求🖥️
-- **Python 3.x**：项目代码基于Python 3开发，确保Python版本兼容。
-- **PyTorch**：用于深度学习模型的构建和训练。
-- **Transformers**：提供预训练模型和相关工具，方便模型加载和微调。
-- **Datasets**：用于数据集的加载和处理。
-- **Scikit-learn**：提供机器学习工具，如TF-IDF向量器。
-- **Numpy**：用于数值计算。
+This is the running script for text classification tasks, and its main functions are as follows:
+- Argument Parsing: Use `argparse` to parse command line arguments and specify the model to use (such as `bert`, `ERNIE`, etc.).
+- Data Loading: Call the `build_dataset` and `build_iterator` functions in `utils.py` to load and process the dataset.
+- Model Initialization: Import the corresponding model class according to the specified model name and initialize the model.
+- Model Training: Call the `train` function in `train_eval.py` for model training and evaluation.
 
-## 安装依赖💻
+## Environment Requirements 🖥️
+
+- Python 3.x: The project code is developed based on Python 3, ensuring Python version compatibility.
+- PyTorch: Used for the construction and training of deep learning models.
+- Transformers: Provides pre-trained models and related tools to facilitate model loading and fine-tuning.
+- Datasets: Used for loading and processing datasets.
+- Scikit-learn: Provides machine learning tools such as TF-IDF vectorizers.
+- Numpy: Used for numerical calculations.
+
+## Install Dependencies 💻
+
 ```bash
 pip install torch transformers datasets scikit-learn numpy
 ```
 
-## 使用方法
+## Usage
 
-### 模型微调
-1. 确保 `lora_rag_LLM/DeepSeek-R1-Distill-Qwen-1.5B` 目录下包含所需的模型文件。
-2. 运行以下命令进行模型微调：
+### Model Fine-tuning
+
+1. Ensure that the `lora_rag_LLM/DeepSeek-R1-Distill-Qwen-1.5B` directory contains the required model files.
+2. Run the following command for model fine-tuning:
 ```bash
 python lora_rag_LLM/main.py
 ```
-微调后的LoRA模型将保存到 `lora_rag_LLM/saved_models` 目录，全量模型将保存到 `lora_rag_LLM/final_models` 目录。
+The fine-tuned LoRA model will be saved to the `lora_rag_LLM/saved_models` directory, and the full model will be saved to the `lora_rag_LLM/final_models` directory.
 
-### 知识增强检索
-可以在代码中调用 `rag.py` 中的 `KnowMoveRAG` 类进行知识检索和提示增强：
+### Knowledge-Enhanced Retrieval
+
+You can call the `KnowMoveRAG` class in `rag.py` in the code for knowledge retrieval and prompt enhancement:
 ```python
 from lora_rag_LLM.rag import KnowMoveRAG
 
 rag = KnowMoveRAG()
-original_prompt = "生成智能制造与装备领域的关键词"
+original_prompt = "Generate keywords in the field of intelligent manufacturing and equipment"
 augmented_prompt = rag.augment_prompt(original_prompt)
 print(augmented_prompt)
 ```
 
-### 文本分类
-运行以下命令进行文本分类任务：
+### Text Classification
+
+Run the following command for text classification tasks:
 ```bash
 python run.py --model bert
 ```
-其中 `--model` 参数可以选择不同的模型，如 `bert`、`ERNIE` 等。
+The `--model` parameter can be used to select different models, such as `bert`, `ERNIE`, etc.
 
-## 注意事项⚠️
-- 在运行模型微调之前，请确保 `lora_rag_LLM/datasets.jsonl` 文件存在，或者可以根据需要修改 `main.py` 中的数据集加载部分。
-- 文本分类任务的数据集路径和模型保存路径可以在 `models` 目录下的配置文件中进行修改。
+## Notes ⚠️
 
-## 贡献🤝
-欢迎对本项目进行贡献，包括但不限于提出问题、提交代码、改进文档等。请遵循项目的贡献指南进行操作。
+- Before running model fine-tuning, please ensure that the `lora_rag_LLM/datasets.jsonl` file exists, or modify the dataset loading part in `main.py` as needed.
+- The dataset path and model save path for text classification tasks can be modified in the configuration files under the `models` directory.
 
-## 联系方式📧
-如果您有任何问题或建议，请通过GitHub Issues与我们联系。
+## Contribution 🤝
+
+Contributions to this project are welcome, including but not limited to raising issues, submitting code, and improving documentation. Please follow the project's contribution guidelines when operating.
+
+## Contact 📧
+
+If you have any questions or suggestions, please contact us via GitHub Issues.
+
+
+### Model Performance Comparison
+
+| Model Name | ACC (%) | F1 (%) | Precision (%) | Recall (%) | Parameters (M) |
+|------------|---------|--------|---------------|------------|----------------|
+| macbert    | 73.02   | 69.86  | 69.36         | 70.73      | 102            |
+| Rbt3       | 72.08   | 69.86  | 70.08         | 69.96      | 102            |
+| Rbt6       | 71.87   | 68.59  | 67.85         | 70.69      | 334            |
+| bert       | 70.86   | 67.80  | 65.95         | 70.96      | 102            |
+| LLM-KE-RoBerta-MFF | 74.47 | 73.33 | 73.62 | 73.44 | 102 |
+
+### Attention Mechanism Performance Comparison
+
+| Attention Mechanism | ACC | F1 | Precision | Recall |
+|---------------------|-----|----|-----------|--------|
+| Soft Attention       | 72.93 | 73.36 | 69.79 | 70.62 |
+| Cross Attention     | 71.14 | 68.69 | 68.33 | 69.92 |
+| Adaptive Attention  | 70.40 | 67.70 | 67.24 | 69.29 |
+| Single-head Attention| 72.39 | 69.53 | 68.73 | 72.83 |
+| Multi-head Self-attention (Our Method) | 74.47 | 73.33 | 73.62 | 73.44 |
